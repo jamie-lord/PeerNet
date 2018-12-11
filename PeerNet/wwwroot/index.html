@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -7,10 +7,39 @@
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/site.css" rel="stylesheet" />
+
+    <script src="js/peer.js"></script>
 </head>
 <body>
     <app>Loading...</app>
 
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        var peer = new Peer();
+
+        window.getId = () => {
+            return peer.id;
+        };
+
+        window.sendData = (peerId, data) => {
+            var conn = peer.connect(peerId);
+            conn.on('open', function () {
+                conn.send(data);
+            });
+
+            return true;
+        };
+
+        window.onLoad = async (componentObjectRef) => {
+            peer.on('connection', async function (conn) {
+                conn.on('data', async function (data) {
+                    await componentObjectRef.invokeMethodAsync('ReceiveData', data);
+                });
+            });
+
+            return true;
+        };
+    </script>
 </body>
 </html>

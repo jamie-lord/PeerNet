@@ -2,6 +2,43 @@
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+<p>Peer ID: @Id</p>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<button onclick="@GetId">Get ID</button>
+
+<input type="text" class="form-control" bind="@PeerId" />
+
+<button onclick="@SendData">Send data</button>
+
+<p>Last data received: @Data</p>
+
+@functions
+{
+protected override async Task OnInitAsync()
+{
+    await JSRuntime.Current.InvokeAsync<bool>("onLoad", new object[] { new DotNetObjectRef(this) });
+}
+
+public string PeerId { get; set; } = null;
+
+private string Id = null;
+
+private async Task GetId()
+{
+    Id = await JSRuntime.Current.InvokeAsync<string>("getId", new object[] { });
+}
+
+private async Task SendData()
+{
+    await JSRuntime.Current.InvokeAsync<bool>("sendData", new object[] { PeerId, "This is only a test!" });
+}
+
+private string Data = null;
+
+[JSInvokable]
+public async void ReceiveData(string data)
+{
+    Console.WriteLine(data);
+    Data = data;
+}
+}
