@@ -16,7 +16,7 @@
     <script src="_framework/blazor.webassembly.js"></script>
 
     <script>
-        var peer = new Peer();
+        var peer = new Peer('my-id', { host: 'localhost', port: 12345 });
 
         window.getId = () => {
             return peer.id;
